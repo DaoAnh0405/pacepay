@@ -13,12 +13,17 @@ exports.notFound = (req, res) => {
 
 exports.errorHandler = (err, req, res, next) => {
   const status = err.status || 500;
-  logger.error(err);
+  if(status >= 500) logger.error(err); 
+  else logger.warn(err.message);
 
   const message = status >= 500 && config.isProd ? 'Lỗi hệ thống' : err.message;
 
   if (wantsJson(req)) {
-    return res.status(status).json({ message });
+    return res.status(status).json({ 
+      success: false,
+      message,
+      details: err.details | undefined
+    });
   }
   res.status(status).render('pages/error', { title: 'Có lỗi xảy ra', message });
 };
