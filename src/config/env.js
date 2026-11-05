@@ -15,6 +15,11 @@ const schema = Joi.object({
   JWT_SECRET: Joi.string().min(16).required(),
   JWT_EXPIRES_IN: Joi.string().default('1d'),
   BCRYPT_ROUNDS: Joi.number().integer().min(4).max(15).default(10),
+
+  MAIL_USER: Joi.string().allow('').default(''),
+  MAIL_PASS: Joi.string().allow('').default(''),
+  MAIL_FROM: Joi.string().allow('').default(''),
+  SMS_PROVIDER: Joi.string().valid('mock', 'twilio').default('mock'),
 }).unknown(true);
 
 const { value, error } = schema.validate(process.env, { abortEarly: false });
@@ -40,4 +45,6 @@ module.exports = {
     expiresIn: value.JWT_EXPIRES_IN,
   },
   bcryptRounds: value.BCRYPT_ROUNDS,
+  mail: { user: value.MAIL_USER, pass: value.MAIL_PASS, from: value.MAIL_FROM || value.MAIL_USER },
+  sms: { provider: value.SMS_PROVIDER },
 };
