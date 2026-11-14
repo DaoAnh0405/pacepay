@@ -1,5 +1,8 @@
 const { Pool } = require('pg');
 const config = require('./env');
+const { types } = require('pg');
+
+types.setTypeParser(1082, (v) => v);
 
 const pool = new Pool({
   ...config.db,

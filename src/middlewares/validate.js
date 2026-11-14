@@ -1,9 +1,9 @@
-const AppError = require('../utils/AppError');
+﻿const AppError = require('../utils/AppError');
 
-module.exports = (schema) => (req, res, next) => {
-  const { value, error } = schema.validate(req.body, {
-    abortEarly: false,   // gom mọi lỗi, không dừng ở lỗi đầu
-    stripUnknown: true,  // bỏ trường lạ người dùng gửi thừa
+module.exports = (schema, source = 'body') => (req, res, next) => {
+  const { value, error } = schema.validate(req[source], {
+    abortEarly: false,
+    stripUnknown: true,
   });
 
   if (error) {
@@ -14,6 +14,7 @@ module.exports = (schema) => (req, res, next) => {
     return next(new AppError(details[0].message, 400, details));
   }
 
-  req.body = value; // dữ liệu đã làm sạch, ép kiểu
+  if (source === 'body') req.body = value;
+  else req.validated = value;
   next();
 };

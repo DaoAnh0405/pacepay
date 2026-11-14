@@ -1,6 +1,7 @@
 const AppError = require('./AppError');
 
 const MIN_AMOUNT = 10000;
+const LARGE_AMOUNT = 5000000; // từ mức này trở lên cần OTP SMS
 const MAX_AMOUNT = 50000000;//hạn mức
 
 // định dạng 50000 -> "50.000 ₫", pg trả BIGINT dạng chuỗi nên ép sang số trước
@@ -24,4 +25,4 @@ function checkAmount(amount) {
   }
 }
 
-module.exports = { MIN_AMOUNT, MAX_AMOUNT, formatVND, checkAmount };
+module.exports = { MIN_AMOUNT, MAX_AMOUNT, LARGE_AMOUNT, formatVND, checkAmount };

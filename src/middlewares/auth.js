@@ -25,5 +25,6 @@ exports.requireAuth = async (req, res, next) => {
   if (!user || user.status !== 'active') return fail();
 
   req.user = user;
+  res.locals.user = user;
   next();
 };

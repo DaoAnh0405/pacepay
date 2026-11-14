@@ -5,9 +5,11 @@ const cors = require('cors');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const jwt = require('jsonwebtoken');
 
 const config = require('./config/env');
 const routes = require('./routes');
+const userModel = require('./models/userModel');
 const { globalLimiter } = require('./middlewares/rateLimiter');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 
@@ -24,6 +26,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// cho mọi view biết user (null nếu chưa đăng nhập)
+app.use(async (req, res, next) => {
+  res.locals.user = null;
+  const token = req.cookies.token;
+  if (token) {
+    try {
+      const payload = jwt.verify(token, config.jwt.secret);
+      const u = await userModel.findById(payload.id);
+      if (u && u.status === 'active') res.locals.user = u;
+    } catch {
+      // token sai/hết hạn coi như chưa đăng nhập
+    }
+  }
+  next();
+});
 
 app.use(globalLimiter);
 app.use('/', routes);
