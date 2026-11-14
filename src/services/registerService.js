@@ -15,7 +15,7 @@ const OTP_TTL_MINUTES = 5;
 const OTP_MAX_ATTEMPTS = 5;
 const RESEND_SECONDS = 60;
 
-// Sinh OTP, kiểm tra thời gian chờ, lưu bản băm. Trả về mã gốc để gửi đi
+// sinh otp, kiểm tra thời gian chờ, lưu bản băm. Trả về mã gốc để gửi đi
 async function issueOtp(reg, channel, extra = {}) {
   const sentAt = reg[`${channel}_otp_sent_at`];
   const secondsSince = sentAt ? (Date.now() - new Date(sentAt).getTime()) / 1000 : Infinity;
@@ -32,7 +32,7 @@ async function issueOtp(reg, channel, extra = {}) {
   return otp;
 }
 
-// Kiểm tra OTP của một kênh
+// Kiểm tra otp của một kênh
 async function checkOtp(reg, channel, otp) {
   const hash = reg[`${channel}_otp_hash`];
   if (!hash) throw new AppError('Bạn chưa yêu cầu mã xác thực', 400);
@@ -53,7 +53,7 @@ const emailText = (otp) =>
   `Mã xác thực PacePay của bạn là ${otp}. Mã có hiệu lực ${OTP_TTL_MINUTES} phút. ` +
   'Nếu không phải bạn yêu cầu, hãy bỏ qua email này.';
 
-// Bước 1: email -> tạo hồ sơ tạm, gửi OTP email
+// 1 email -> tạo hồ sơ tạm, gửi otp email
 exports.start = async (email) => {
   if (await userModel.findByEmail(email)) {
     throw new AppError('Tài khoản đã tồn tại', 409, { code: 'EMAIL_EXISTS' });
@@ -68,17 +68,17 @@ exports.start = async (email) => {
   return { token, devOtp: !mailer.enabled && !config.isProd ? otp : undefined };
 };
 
-// Gửi lại OTP email
+// gửi lại otp email
 exports.resendEmailOtp = async (reg) => {
   const otp = await issueOtp(reg, 'email');
   await mailer.send(reg.email, 'PacePay: mã xác thực email', emailText(otp));
   return { devOtp: !mailer.enabled && !config.isProd ? otp : undefined };
 };
 
-// Bước 2: kiểm tra OTP email
+// 2 kiểm tra otp email
 exports.verifyEmail = (reg, otp) => checkOtp(reg, 'email', otp);
 
-// Bước 3: số điện thoại -> gửi OTP SMS (phải xác thực email trước)
+// 3 số điện thoại -> gửi otp sms (phải xác thực email trước)
 exports.sendPhoneOtp = async (reg, phone) => {
   if (!reg.email_verified) {
     throw new AppError('Bạn chưa xác thực email', 403);
@@ -93,10 +93,10 @@ exports.sendPhoneOtp = async (reg, phone) => {
   return { devOtp: sms.isMock && !config.isProd ? otp : undefined };
 };
 
-// Bước 4: kiểm tra OTP SMS
+// 4 kiểm tra otp sms
 exports.verifyPhone = (reg, otp) => checkOtp(reg, 'phone', otp);
 
-// Bước cuối: tạo user + ví trong CÙNG một transaction
+// 5 tạo user + ví trong CÙNG một transaction
 exports.complete = async (reg, { password, fullName, dateOfBirth, address }) => {
   if (!reg.email_verified || !reg.phone_verified) {
     throw new AppError('Bạn chưa xác thực đủ email và số điện thoại', 403);
@@ -109,7 +109,7 @@ exports.complete = async (reg, { password, fullName, dateOfBirth, address }) => 
     await client.query('BEGIN');
     const user = await userModel.create(client, {
       fullName,
-      email: reg.email,   // lấy từ hồ sơ đã xác thực, KHÔNG tin dữ liệu client gửi
+      email: reg.email,   // lấy từ hồ sơ đã xác thực, không tin dữ liệu client gửi
       phone: reg.phone,
       passwordHash,
       dateOfBirth: dateOfBirth || null,

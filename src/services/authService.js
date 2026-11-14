@@ -8,7 +8,7 @@ const userModel = require('../models/userModel');
 exports.login = async ({ email, password }) => {
   const user = await userModel.findByEmail(email);
 
-  // Sai email hoặc sai mật khẩu đều trả CÙNG một thông báo
+  // sai email hoặc sai mật khẩu đều trả CÙNG một thông báo
   const ok = user && (await bcrypt.compare(password, user.password_hash));
   if (!ok) {
     throw new AppError('Email hoặc mật khẩu không đúng', 401);

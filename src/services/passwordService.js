@@ -34,31 +34,38 @@ async function checkOtp(reset, channel, otp) {
   await passwordResetModel.markVerified(reset.id, channel);
 }
 
-// 1 gửi OTP email, luôn trả kết quả giống nhau dù email có tồn tại hay không
+// 1 kiểm tra email có tài khoản không, có thì mới gửi OTP email
 exports.forgot = async (email) => {
   await passwordResetModel.deleteExpired();
 
   const user = await userModel.findByEmail(email);
+  if (!user) {
+    throw new AppError('Tài khoản không tồn tại', 404, { code: 'ACCOUNT_NOT_FOUND' });
+  }
+  if (user.status !== 'active') {
+    throw new AppError('Tài khoản đã bị khóa', 403);
+  }
+  if (!user.phone) {
+    throw new AppError('Tài khoản chưa có số điện thoại nên không thể đặt lại mật khẩu', 400);
+  }
+
   const token = crypto.randomBytes(32).toString('hex');
   const otp = newOtp();
-  const canSend = user && user.status === 'active' && user.phone;
 
   await passwordResetModel.create({
     tokenHash: sha256(token),
-    userId: canSend ? user.id : null,
+    userId: user.id,
     otpHash: sha256(otp),
     ttlMinutes: OTP_TTL_MINUTES,
   });
 
-  if (canSend) {
-    await mailer.send(
-      user.email,
-      'PacePay: Mã đặt lại mật khẩu',
-      `Mã đặt lại mật khẩu của bạn là ${otp}. Hiệu lực ${OTP_TTL_MINUTES} phút. Nếu không phải bạn yêu cầu, hãy bỏ qua email này.`,
-    );
-  }
+  await mailer.send(
+    user.email,
+    'PacePay: mã đặt lại mật khẩu',
+    `Mã đặt lại mật khẩu của bạn là ${otp}. Hiệu lực ${OTP_TTL_MINUTES} phút. Nếu không phải bạn yêu cầu, hãy bỏ qua email này.`,
+  );
 
-  return { token, devOtp: canSend && !mailer.enabled && !config.isProd ? otp : undefined };
+  return { token, devOtp: !mailer.enabled && !config.isProd ? otp : undefined };
 };
 
 // 2 kiểm tra OTP email, đúng thì gửi tiếp OTP SMS tới sđt của tài khoản
@@ -82,7 +89,7 @@ exports.verifyEmail = async (reset, otp) => {
   };
 };
 
-// 3 kiểm tra OTP SMS (phải xác thực email trước)
+// 3 kiểm tra otp sms (phải xác thực email trước)
 exports.verifyPhone = async (reset, otp) => {
   if (!reset.email_verified) {
     throw new AppError('Bạn chưa xác thực email', 403);
