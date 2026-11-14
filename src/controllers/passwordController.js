@@ -13,7 +13,7 @@ exports.forgot = async (req, res) => {
   res.cookie('reset_token', token, { ...COOKIE_OPTIONS, maxAge: 15 * 60 * 1000 });
   res.json({
     success: true,
-    message: 'Nếu email tồn tại, mã xác thực đã được gửi tới email của tài khoản',
+    message: 'Đã gửi mã xác thực tới email của bạn',
     data: { devOtp },
   });
 };
