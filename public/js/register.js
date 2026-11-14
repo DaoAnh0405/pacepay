@@ -2,7 +2,6 @@
   const wizard = document.getElementById('register-wizard');
   if (!wizard) return;
 
-  const TOTAL = 7;
   const steps = wizard.querySelectorAll('.step');
   const existsBox = document.getElementById('email-exists');
   const data = {}; // mật khẩu, họ tên giữ tạm trong trang
@@ -13,7 +12,6 @@
       s.hidden = Number(s.dataset.step) !== n;
     });
     existsBox.hidden = true;
-    document.getElementById('progress').textContent = `Bước ${n}/${TOTAL}`;
     showMessage('', false);
   }
 
@@ -30,7 +28,7 @@
     });
   }
 
-  // chỉ có devOtp khi kênh đang giả lập (chưa có Gmail/SMS thật)
+  // chỉ có devOtp khi kênh đang giả lập (chưa có SMS thật)
   function hint(body, text) {
     if (body.data && body.data.devOtp) {
       showMessage(`${text} (môi trường thử) Mã OTP: ${body.data.devOtp}`, false);
@@ -64,15 +62,6 @@
   bind(2, async (f) => {
     await postJson('/api/register/verify-email', f);
     goTo(3);
-  });
-
-  document.getElementById('resend-email').addEventListener('click', async () => {
-    try {
-      const body = await postJson('/api/register/resend-email', {});
-      hint(body, body.message);
-    } catch (err) {
-      showMessage(err.message, true);
-    }
   });
 
   // 3 số điện thoại

@@ -1,0 +1,14 @@
+<%- include('../partials/header') %>
+<h1>Nạp tiền</h1>
+<p>(Nạp tiền giả lập, không kết nối ngân hàng thật)</p>
+
+<form id="deposit-form">
+  <label>Số tiền (₫)
+    <input type="number" name="amount" min="10000" max="50000000" step="1" required>
+  </label>
+  <label>Ghi chú <input type="text" name="note" maxlength="255"></label>
+  <button type="submit">Nạp tiền</button>
+</form>
+
+<p id="message" class="message"></p>
+<%- include('../partials/footer') %>

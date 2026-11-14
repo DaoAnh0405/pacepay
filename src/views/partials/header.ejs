@@ -3,9 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof title !== 'undefined' ? title : 'PacePay' %></title>
+  <title>PacePay: <%= typeof title !== 'undefined' ? title : '' %></title>
+  <link rel="icon" type="image/svg+xml" href="../../../images/favicon.svg">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<header><a href="/">PacePay</a></header>
+<header class="site-header">
+  <div class="inner header-row">
+    <a class="brand" href="<%= user ? '/dashboard' : '/' %>">
+      <img src="/images/logo.svg" alt="PacePay">
+    </a>
+
+    <% if (user) { %>
+      <nav class="nav">
+        <a href="/transactions">Lịch sử</a>
+        <a href="/profile">Tài khoản</a>
+      </nav>
+      <div class="header-actions">
+        <button id="logout-btn" type="button" class="pill pill--dark">Đăng xuất</button>
+      </div>
+    <% } else { %>
+      <div class="header-actions">
+        <a class="pill pill--light" href="/login">Đăng nhập</a>
+        <a class="pill pill--dark" href="/register">Đăng ký</a>
+      </div>
+    <% } %>
+  </div>
+</header>
 <main>

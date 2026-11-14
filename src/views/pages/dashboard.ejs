@@ -1,5 +1,40 @@
 <%- include('../partials/header') %>
-<h1>Xin chào, <%= user.full_name %></h1>
-<p>Email: <%= user.email %></p>
-<button id="logout-btn">Đăng xuất</button>
+<div class="dash">
+  <section class="dash-card">
+    <div class="dash-head">
+      <h2>Số dư</h2>
+    </div>
+
+    <p class="dash-balance"><%= balanceText %></p>
+    <p class="dash-sub">Khả dụng</p>
+
+    <div class="dash-actions">
+      <a class="btn-blue" href="/deposit">Nạp tiền</a>
+      <a class="btn-blue" href="/withdraw">Rút tiền</a>
+      <a class="btn-blue" href="/transfer">Chuyển tiền</a>
+    </div>
+  </section>
+
+  <section class="dash-card">
+    <h2>Giao dịch gần đây</h2>
+    <% if (recent.length === 0) { %>
+      <p class="dash-empty">Chưa có giao dịch nào.</p>
+    <% } else { %>
+      <ul class="activity">
+        <% recent.forEach((t) => { %>
+          <li>
+            <div>
+              <strong><%= describe(t) %></strong><br>
+              <small><%= new Date(t.created_at).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) %></small>
+            </div>
+            <span class="<%= t.direction === 'out' ? 'amt-out' : 'amt-in' %>">
+              <%= t.direction === 'out' ? '-' : '+' %><%= formatVND(t.amount) %>
+            </span>
+          </li>
+        <% }); %>
+      </ul>
+      <a class="dash-more" href="/transactions">Xem tất cả</a>
+    <% } %>
+  </section>
+</div>
 <%- include('../partials/footer') %>

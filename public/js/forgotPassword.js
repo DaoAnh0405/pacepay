@@ -2,14 +2,14 @@
   const wizard = document.getElementById('forgot-wizard');
   if (!wizard) return;
 
-  const TOTAL = 4;
   const steps = wizard.querySelectorAll('.step');
+  const missingBox = document.getElementById('account-missing');
 
   function goTo(n) {
+    missingBox.hidden = true;
     steps.forEach((s) => {
       s.hidden = Number(s.dataset.step) !== n;
     });
-    document.getElementById('progress').textContent = `Bước ${n}/${TOTAL}`;
   }
 
   function bind(n, handler) {
@@ -32,10 +32,24 @@
     showMessage(body.message + extra, false);
   }
 
-  bind(1, async (f) => {
-    const body = await postJson('/api/password/forgot', f);
+    bind(1, async (f) => {
+    missingBox.hidden = true;
+    let body;
+    try {
+      body = await postJson('/api/password/forgot', f);
+    } catch (err) {
+      if (err.details && err.details.code === 'ACCOUNT_NOT_FOUND') {
+        missingBox.hidden = false; // hiện "tài khoản không tồn tại" + nút Đăng ký
+        return;
+      }
+      throw err; // lỗi khác hiện như bình thường
+    }
     goTo(2);
     hint(body);
+  });
+
+  document.querySelector('#form-1 input[name="email"]').addEventListener('input', () => {
+    missingBox.hidden = true;
   });
 
   bind(2, async (f) => {

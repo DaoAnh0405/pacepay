@@ -1,0 +1,107 @@
+<%- include('../partials/header') %>
+<div class="prof" id="prof"
+  data-name="<%= profile.full_name %>"
+  data-dob="<%= dob %>"
+  data-address="<%= profile.address || '' %>">
+
+  <div class="prof-col">
+    <div class="prof-card">
+      <div class="prof-banner">
+        <span>Hồ sơ</span>
+        <span>Tham gia vào <%= joinYear %></span>
+      </div>
+      <div class="prof-avatar">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#0070ff" stroke-width="2"
+          stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      </div>
+      <div class="prof-namerow">
+        <h1><%= profile.full_name %></h1>
+        <button type="button" class="link-btn" data-open="dlg-name">Đổi tên</button>
+      </div>
+    </div>
+
+    <h2 class="prof-title">Bảo mật</h2>
+    <div class="prof-card prof-security">
+      <div class="sec-row">
+        <div>
+          <strong>Mật khẩu</strong>
+          <small>Tạo hoặc cập nhật mật khẩu.</small>
+        </div>
+        <a class="link-btn" href="/change-password">Cập nhật</a>
+      </div>
+      <div class="sec-row">
+        <div>
+          <strong>Đặt PIN</strong>
+          <small><%= profile.has_pin ? 'Đã đặt PIN. Dùng trong giao dịch.' : 'Chưa đặt PIN. Dùng trong giao dịch.' %></small>
+        </div>
+        <button type="button" class="link-btn" id="pin-open" style="background-color: #fff; color: #0070ff;">Cập nhật</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="prof-col">
+    <h2 class="prof-title">Email</h2>
+    <div class="prof-card info-row"><span>✉</span> <%= profile.email %></div>
+
+    <h2 class="prof-title">Số điện thoại</h2>
+    <div class="prof-card info-row">
+      <span>☎</span>
+      <div><strong><%= profile.phone %></strong><br><small>Di động</small></div>
+    </div>
+
+    <h2 class="prof-title">Địa chỉ</h2>
+    <div class="prof-card info-row">
+      <span>⌂</span>
+      <div class="grow"><%= profile.address || 'Chưa có địa chỉ' %></div>
+      <button type="button" class="link-btn" data-open="dlg-address" style="background-color: #fff; color: #0070ff;">Chỉnh sửa</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal đổi tên -->
+<dialog id="dlg-name" class="modal">
+  <h2>Đổi tên</h2>
+  <form id="form-name">
+    <label class="field"><span>Họ và tên</span>
+      <input type="text" name="fullName" value="<%= profile.full_name %>" required>
+    </label>
+    <p id="msg-name" class="message"></p>
+    <button type="submit" class="btn-primary">Lưu</button>
+    <button type="button" class="btn-outline modal-close" data-close>Hủy</button>
+  </form>
+</dialog>
+
+<!-- Modal địa chỉ -->
+<dialog id="dlg-address" class="modal">
+  <h2>Chỉnh sửa địa chỉ</h2>
+  <form id="form-address">
+    <label class="field"><span>Địa chỉ</span>
+      <input type="text" name="address" maxlength="255" value="<%= profile.address || '' %>">
+    </label>
+    <p id="msg-address" class="message"></p>
+    <button type="submit" class="btn-primary">Lưu</button>
+    <button type="button" class="btn-outline modal-close" data-close>Hủy</button>
+  </form>
+</dialog>
+
+<!-- Modal đặt PIN (tự gửi SMS khi mở) -->
+<dialog id="dlg-pin" class="modal">
+  <h2><%= profile.has_pin ? 'Đổi PIN' : 'Đặt PIN' %></h2>
+  <form id="form-pin">
+    <p id="pin-hint" class="modal-hint">Đang gửi mã SMS tới số điện thoại của bạn...</p>
+    <label class="field"><span>Mã SMS (6 số)</span>
+      <input type="text" name="otp" inputmode="numeric" maxlength="6" autocomplete="off" required>
+    </label>
+    <label class="field"><span>PIN mới (6 số)</span>
+      <input type="password" name="pin" inputmode="numeric" maxlength="6" autocomplete="off" required>
+    </label>
+    <label class="field"><span>Nhập lại PIN</span>
+      <input type="password" name="confirm" inputmode="numeric" maxlength="6" autocomplete="off" required>
+    </label>
+    <p id="msg-pin" class="message"></p>
+    <button type="submit" class="btn-primary">Xác nhận</button>
+    <button type="button" class="btn-outline modal-close" id="pin-resend">Gửi lại mã SMS</button>
+    <button type="button" class="btn-ghost" data-close>Hủy</button>
+  </form>
+</dialog>
+<%- include('../partials/footer') %>

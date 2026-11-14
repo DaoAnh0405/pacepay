@@ -1,4 +1,4 @@
-// Gửi JSON tới server. Lỗi thì ném Error kèm status và details (để biết mã lỗi).
+// gửi JSON tới server, lỗi thì ném err kèm status và details (để biết mã lỗi).
 async function postJson(url, data) {
   const res = await fetch(url, {
     method: 'POST',
@@ -19,14 +19,30 @@ async function postJson(url, data) {
   return body;
 }
 
+async function putJson(url, data) {
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(data || {}),
+  });
+  const body = await res.json();
+  if (!res.ok) {
+    const err = new Error(body.message || 'Có lỗi xảy ra');
+    err.status = res.status;
+    err.details = body.details;
+    throw err;
+  }
+  return body;
+}
+
 function showMessage(text, isError) {
   const el = document.getElementById('message');
   if (!el) return;
   el.textContent = text; // textContent: không chạy HTML, an toàn trước XSS
-  el.style.color = isError ? 'red' : 'green';
+  el.className = 'message ' + (isError ? 'message--error' : 'message--success');
 }
 
-// Đăng nhập
+// đăng nhập
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
@@ -41,7 +57,7 @@ if (loginForm) {
   });
 }
 
-// Đăng xuất
+// đăng xuất
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {

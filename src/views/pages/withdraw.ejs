@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<h1>Rút tiền</h1>
+
+<form id="withdraw-form">
+  <label>Số tiền (₫)
+    <input type="number" name="amount" min="10000" max="50000000" step="1" required>
+  </label>
+  <label>Ghi chú <input type="text" name="note" maxlength="255"></label>
+  <label>PIN giao dịch (6 số)
+    <input type="password" name="pin" inputmode="numeric" maxlength="6" autocomplete="off" required>
+  </label>
+  <%- include('../partials/largeOtp') %>
+  <button type="submit">Rút tiền</button>
+</form>
+
+<p id="message" class="message"></p>
+<p>Chưa có PIN? <a href="/profile">Đặt PIN ở Hồ sơ</a></p>
+<%- include('../partials/footer') %>
