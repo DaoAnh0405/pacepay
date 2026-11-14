@@ -9,7 +9,9 @@
     "test": "jest --runInBand",
     "db:migrate": "node src/database/migrate.js",
     "db:seed": "node src/database/seed.js",
-    "db:reset": "node src/database/reset.js && npm run db:migrate && npm run db:seed"
+    "db:reset": "node src/database/reset.js && npm run db:migrate && npm run db:seed",
+    "test:db": "set NODE_ENV=test&& node src/database/migrate.js",
+    "test": "jest --runInBand"
   },
   "keywords": [],
   "author": "daoanh0405",
