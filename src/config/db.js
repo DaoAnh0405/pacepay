@@ -1,14 +1,14 @@
-const { Pool } = require('pg');
+
+const { Pool, types } = require('pg');
 const config = require('./env');
-const { types } = require('pg');
 
 types.setTypeParser(1082, (v) => v);
 
 const pool = new Pool({
   ...config.db,
-  max: 10,
+  max: 5,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000,
 });
 
 pool.on('error', (err) => {
