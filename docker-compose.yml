@@ -1,0 +1,45 @@
+# Chạy thử PacePay trên máy: docker compose up --build
+# Dùng Postgres trong container, KHÔNG đụng tới Neon.
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: pacepay
+      POSTGRES_USER: pacepay
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pacepay_local}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pacepay -d pacepay"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: pacepay
+      DB_NAME_TEST: pacepay_test
+      DB_USER: pacepay
+      DB_PASSWORD: ${DB_PASSWORD:-pacepay_local}
+      JWT_SECRET: ${JWT_SECRET:?Hãy đặt JWT_SECRET trong file .env}
+      JWT_EXPIRES_IN: 1d
+      BCRYPT_ROUNDS: 10
+      MAIL_USER: ${MAIL_USER:-}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      SMS_PROVIDER: mock
+      DEMO_MODE: "true"
+      COOKIE_SECURE: "false"
+    command: npm run start:demo
+
+volumes:
+  pgdata:
