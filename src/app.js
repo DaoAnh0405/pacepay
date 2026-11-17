@@ -16,6 +16,11 @@ const { notFound, errorHandler } = require('./middlewares/errorHandler');
 const app = express();
 app.set('trust proxy', 1);
 
+//nhằm để web không ngủ
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
