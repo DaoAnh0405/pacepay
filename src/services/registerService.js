@@ -65,14 +65,14 @@ exports.start = async (email) => {
   const otp = await issueOtp(reg, 'email');
   await mailer.send(email, 'PacePay: mã xác thực email', emailText(otp));
 
-  return { token, devOtp: !mailer.enabled && !config.isProd ? otp : undefined };
+  return { token, devOtp: !mailer.enabled && config.showDevOtp ? otp : undefined };
 };
 
 // gửi lại otp email
 exports.resendEmailOtp = async (reg) => {
   const otp = await issueOtp(reg, 'email');
   await mailer.send(reg.email, 'PacePay: mã xác thực email', emailText(otp));
-  return { devOtp: !mailer.enabled && !config.isProd ? otp : undefined };
+  return { devOtp: !mailer.enabled && config.showDevOtp ? otp : undefined };
 };
 
 // 2 kiểm tra otp email
@@ -90,7 +90,7 @@ exports.sendPhoneOtp = async (reg, phone) => {
   const otp = await issueOtp(reg, 'phone', { phone });
   await sms.send(phone, `PacePay: ma xac thuc cua ban la ${otp}, hieu luc ${OTP_TTL_MINUTES} phut.`);
 
-  return { devOtp: sms.isMock && !config.isProd ? otp : undefined };
+  return { devOtp: sms.isMock && config.showDevOtp ? otp : undefined };
 };
 
 // 4 kiểm tra otp sms

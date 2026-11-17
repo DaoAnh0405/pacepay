@@ -65,7 +65,7 @@ exports.forgot = async (email) => {
     `Mã đặt lại mật khẩu của bạn là ${otp}. Hiệu lực ${OTP_TTL_MINUTES} phút. Nếu không phải bạn yêu cầu, hãy bỏ qua email này.`,
   );
 
-  return { token, devOtp: !mailer.enabled && !config.isProd ? otp : undefined };
+  return { token, devOtp: !mailer.enabled && config.showDevOtp ? otp : undefined };
 };
 
 // 2 kiểm tra OTP email, đúng thì gửi tiếp OTP SMS tới sđt của tài khoản
@@ -85,7 +85,7 @@ exports.verifyEmail = async (reset, otp) => {
 
   return {
     maskedPhone: `${phone.slice(0, 3)}****${phone.slice(-3)}`,
-    devOtp: sms.isMock && !config.isProd ? phoneOtp : undefined,
+    devOtp: sms.isMock && config.showDevOtp ? phoneOtp : undefined,
   };
 };
 

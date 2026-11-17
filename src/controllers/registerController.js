@@ -4,7 +4,7 @@ const registerService = require('../services/registerService');
 const COOKIE_OPTIONS = {
   httpOnly: true,
   sameSite: 'lax',
-  secure: config.isProd,
+  secure: config.cookieSecure,
   path: '/api/register',
 };
 

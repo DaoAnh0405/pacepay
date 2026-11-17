@@ -35,7 +35,7 @@ exports.sendActionOtp = async (userId, action) => {
 
   return {
     maskedPhone: `${user.phone.slice(0, 3)}****${user.phone.slice(-3)}`,
-    devOtp: sms.isMock && !config.isProd ? otp : undefined,
+    devOtp: sms.isMock && config.showDevOtp ? otp : undefined,
   };
 };
 

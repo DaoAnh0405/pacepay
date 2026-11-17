@@ -4,7 +4,7 @@ const passwordService = require('../services/passwordService');
 const COOKIE_OPTIONS = {
   httpOnly: true,
   sameSite: 'lax',
-  secure: config.isProd,
+  secure: config.cookieSecure,
   path: '/api/password',
 };
 

@@ -4,7 +4,8 @@
   "description": "ví điện tử mini",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node src/database/migrate.js && node src/server.js",
+    "start:demo": "node src/database/migrate.js && node src/database/seed.js && node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --runInBand",
     "db:migrate": "node src/database/migrate.js",
